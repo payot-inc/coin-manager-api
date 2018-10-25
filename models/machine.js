@@ -1,10 +1,29 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const machine = sequelize.define('machine', {
-    mac: DataTypes.STRING
-  }, {});
-  machine.associate = function(models) {
+    mac: {
+      type: DataTypes.STRING(50),
+      unique: true,
+      allowNull: false
+    },
+    name: {
+      type: DataTypes.STRING(20),
+      allowNull: false
+    },
+    price: DataTypes.DECIMAL,
+    serviceAmmount: {
+      type: DataTypes.DECIMAL,
+      defaultValue: 0
+    },
+    serviceRuntimeSec: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0
+    },
+    installAt: DataTypes.DATEONLY
+  }, { paranoid: true });
+  machine.associate = function (models) {
     // associations can be defined here
+    machine.belongsTo(models.company)
   };
   return machine;
 };

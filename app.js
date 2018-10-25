@@ -1,14 +1,12 @@
 const createError = require('http-errors');
 const express = require('express');
+const fs = require('fs');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const cors = require('cors');
 const helmet = require('helmet');
 const db = require('./models');
-
-const indexRouter = require('./routes/index');
-const usersRouter = require('./routes/users');
 
 const app = express();
 
@@ -26,12 +24,29 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+fs.readdir(path.join(__dirname, 'routes'), (err, files) => {
+  if (err) return;
+
+  files.forEach(file => {
+    const fileName = file.split('.')[0];
+    const filePath = `./routes/${fileName}`;
+    const route = require(filePath);
+
+    app.use(`/${fileName}`, route);
+  })
+});
+
+fs.readdirSync(path.join(__dirname, 'routes')).forEach(file => {
+  const fileName = file.split('.')[0];
+  const filePath = `./routes/${fileName}`;
+  const route = require(filePath);
+
+  app.use(`/${fileName}`, route);
+})
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
-  next(createError(404));
+  res.status(404).json({ error: '잘못된 요청입니다', path: req.path })
 });
 
 // error handler

@@ -3,8 +3,9 @@ module.exports = (sequelize, DataTypes) => {
   const payments = sequelize.define('payments', {
     mac: DataTypes.STRING,
     amount: DataTypes.DECIMAL,
+    payAt: DataTypes.DATE
 
-  }, {});
+  }, { timestamps: false });
   payments.associate = function(models) {
     // associations can be defined here
 
@@ -12,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
 
     payments.belongsTo(models.franchise)
 
-    payments.belongsTo(models.machine)
+    payments.belongsTo(models.machine, { foreignKey: 'mac', targetKey: 'mac' })
   };
   return payments;
 };
