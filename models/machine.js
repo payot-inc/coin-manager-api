@@ -15,6 +15,9 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DECIMAL,
       defaultValue: 0
     },
+    stopTime: DataTypes.DATE,
+    isService: DataTypes.DATE,
+    stopReason: DataTypes.TEXT,
     serviceRuntimeSec: {
       type: DataTypes.INTEGER,
       defaultValue: 0
@@ -24,6 +27,8 @@ module.exports = (sequelize, DataTypes) => {
   machine.associate = function (models) {
     // associations can be defined here
     machine.belongsTo(models.company)
+
+    machine.hasMany(model.service)
   };
   return machine;
 };
