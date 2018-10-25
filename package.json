@@ -1,0 +1,25 @@
+{
+  "name": "api",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www",
+    "serve": "pm2 start ./bin/www -i 0 --name api"
+  },
+  "dependencies": {
+    "cookie-parser": "~1.4.3",
+    "cors": "^2.8.4",
+    "debug": "~2.6.9",
+    "express": "~4.16.0",
+    "express-validator": "^5.3.0",
+    "helmet": "^3.14.0",
+    "http-errors": "~1.6.2",
+    "jade": "~1.11.0",
+    "lodash": "^4.17.11",
+    "moment": "^2.22.2",
+    "morgan": "~1.9.0",
+    "mysql2": "^1.6.1",
+    "node-fetch": "^2.2.0",
+    "sequelize": "^4.41.0"
+  }
+}
