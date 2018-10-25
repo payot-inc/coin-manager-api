@@ -18,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {});
   service.associate = function(models) {
     // associations can be defined here
+    service.belongsTo(models.machine)
     
   };
   return service;

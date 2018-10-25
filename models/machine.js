@@ -28,7 +28,7 @@ module.exports = (sequelize, DataTypes) => {
     // associations can be defined here
     machine.belongsTo(models.company)
 
-    machine.hasMany(model.service)
+    machine.hasMany(models.service)
   };
   return machine;
 };

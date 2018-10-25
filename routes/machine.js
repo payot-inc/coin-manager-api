@@ -81,6 +81,7 @@ router.put('/:id', [
     });
 });
 
+// 장치 삭제
 router.delete('/:id', (req, res) => {
     machine.destroy({
         where: {

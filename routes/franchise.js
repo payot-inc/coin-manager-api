@@ -5,6 +5,36 @@ const password = require('../modules/password');
 const { franchise, company } = require('../models');
 const { check, validationResult } = require('express-validator/check');
 
+// 프랜차이즈 로그인
+router.post('/login', [
+    check('email').isEmail().normalizeEmail(),
+    check('password').isString().isLength({ min: 4, max: 20 })
+], (req, res) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) return res.status(422).json({ error: errors.array() });
+
+    franchise.findOne({
+        where: {
+            email: req.body.email
+        },
+        attributes: ['id', 'hash', 'salt']
+    }).then(data => {
+        if (_.isEmpty(data)) throw { name: 'NotFoundFranchise' };
+        return password.match(req.body.password, data.salt, data.hash)
+            .then(passwordMatched => {
+                if (!passwordMatched) throw { name: 'NotMatchedPassword' };
+                else return data.id;
+            })
+    }).then(id => {
+        res.redirect(`/franchise/${id}`);
+    }).catch(err => {
+        if (err.name == 'NotFoundFranchise') res.status(400).json({ error: '없는 계정입니다' })
+        else if (err.name == 'NotMatchedPassword') res.status(403).json({ error: '비밀번호 오류입니다' });
+        else res.status(500).json({ error: err });
+    });
+});
+
 // 프랜차이즈 조회
 router.get('/:id', [
     check('id', '아이디는 숫자이어야 합니다').toInt()

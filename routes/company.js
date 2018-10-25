@@ -2,8 +2,36 @@ const router = require('express').Router();
 const _ = require('lodash');
 const moment = require('moment');
 const password = require('../modules/password');
-const { company, owner } = require('../models');
+const { company, owner, machine, service, maintenance } = require('../models');
 const { check, validationResult } = require('express-validator/check');
+
+// 업체 로그인
+router.post('/login', [
+    check('email').isEmail().normalizeEmail(),
+    check('password').isString().isLength({ min: 4, max: 20 })
+], (req, res) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) return res.status(422).json({ error: errors.array() });
+
+    company.findOne({
+        where: {
+            email: req.body.email
+        },
+        attributes: ['id', 'hash', 'salt']
+    }).then(result => {
+        if (_.isEmpty(result)) throw { name: 'NotFoundCompany' };
+        return password.match(req.body.password, result.salt, result.hash)
+            .then(passwordMatch => {
+                if (!passwordMatch) throw { name: 'NotMatchedPassword' }
+                else res.redirect(`/company/${result.id}`)
+            }).catch(err => {
+                if (err.name == 'NotFoundCompany') res.status(400).json({ error: '없는 계정입니다' });
+                else if (err.name == 'NotMatchedPassword') res.status(403).json({ error: '비밀번호 오류입니다' });
+                else res.status(500).json({ error: err });
+            });
+    });
+});
 
 // 업체 조회
 router.get('/:id', [
@@ -17,10 +45,18 @@ router.get('/:id', [
         where: {
             id: req.params.id
         },
+        attributes: { exclude: ['hash', 'salt', 'createdAt', 'updatedAt', 'deletedAt'] },
         include: [
-            { model: owner }
-        ],
-        attributes: { exclude: ['hash', 'salt', 'updatedAt', 'deletedAt'] }
+            { model: owner },
+            { 
+                model: machine, 
+                attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
+                include: [{
+                    model: service,
+                    attributes: { exclude: [''] }
+                }]
+            }
+        ]
     }).then(result => {
         if (result == null || result.length == 0) res.json({});
         else res.json(result);
@@ -166,7 +202,7 @@ router.get('/:id/owner', (req, res) => {
 router.post('/:id/owner', [
     check('id').isInt(),
     check('name', '이름을 입력해 주세요').isString().isLength({ min: 2, max: 20 }),
-    check('gender', '성별을 입력해 주세요').isString().isLength({ min: 1, max: 1 }),
+    check('gender', '성별을 입력해 주세요').isIn(['남', '여']),
     check('phone', '휴대전화번호를 입력해 주세요').isMobilePhone(),
     check('premium', '권리금을 입력해 주세요').isNumeric(),
     check('deposit', '보증금을 입력해 주세요').isNumeric(),
@@ -233,4 +269,91 @@ router.delete('/:id/owner/:ownerId', (req, res) => {
         else res.status(204).json({ status: 'success' });
     })
 });
+
+// 업체 월 관리 조회
+router.get('/:id/maintenance', [
+    check('start').custom(val => moment(val).isValid()),
+    check('end').custom(val => moment(val).isValid())
+], (req, res) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) return res.status(422).json({ error: errors.array() });
+
+    maintenance.findAll({
+        where: {
+            companyId: req.params.id,
+            targetDate: {
+                between: [moment(req.query.start).toDate(), moment(req.query.end).toDate()]
+            }
+        }
+    }).then(result => {
+        if (_.isEmpty(result)) res.status(204).json([]);
+        else res.json(result)
+    }).catch(err => {
+        res.status(500).json({ error: err });
+    });
+});
+
+// 업체 월 관리 입력
+router.post('/:id/maintenance', [
+    check('id', '아이디는 숫자이어야 합니다').isInt(),
+    check('electric', '전기세를 입력해 주세요').isNumeric(),
+    check('gas', '전기세를 입력해 주세요').isNumeric(),
+    check('water', '수도세를 입력해 주세요').isNumeric(),
+    check('spaceRant', '월세를 입력해 주세요').isNumeric(),
+    check('management', '관리비를 입력해 주세요').isNumeric(),
+    check('repiar', '수리비를 입력해 주세요').isNumeric(),
+    check('etc', '기타비용을 입력해 주세요').isNumeric(),
+    check('targetDate', '월을 입력해 주세요').custom(val => moment(val).isValid())
+], (req, res) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) return res.status(422).json({ error: errors.array() });
+
+    let data = req.body;
+    delete data.id;
+    data.companyId = req.params.id;
+    data.targetDate = moment(data.targetDate).endOf('month').toDate();
+
+    maintenance.create(data)
+        .then(result => {
+            res.json(result);
+        }).catch(err => {
+            res.status(500).json({ error: err });
+        });
+});
+
+// 업체 관리비 수정
+router.put('/:id/maintenance/:maintenanceId', [
+    check('id', '아이디는 숫자이어야 합니다').isInt().optional(),
+    check('maintenanceId', '아이디는 숫자이어야 합니다').isInt().optional(),
+    check('electric', '전기세를 입력해 주세요').isNumeric().optional(),
+    check('gas', '전기세를 입력해 주세요').isNumeric().optional(),
+    check('water', '수도세를 입력해 주세요').isNumeric().optional(),
+    check('spaceRant', '월세를 입력해 주세요').isNumeric().optional(),
+    check('management', '관리비를 입력해 주세요').isNumeric().optional(),
+    check('repiar', '수리비를 입력해 주세요').isNumeric().optional(),
+    check('etc', '기타비용을 입력해 주세요').isNumeric().optional(),
+], (req, res) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) return res.status(422).json({ error: errors.array() });
+
+    let data = req.body;
+    delete data.id;
+    delete data.targetDate;
+    
+    maintenance.update(data, {
+        where: {
+            id: req.params.maintenanceId
+        },
+        attributes: Object.keys(data)
+    }).then(result => {
+        if (result[0] == 1) res.json({ status: 'success' });
+        else res.status(204).json({ status: 'success' })
+    }).catch(err => {
+        res.status(500).json({ error: err });
+    });
+});
+
 module.exports = router;

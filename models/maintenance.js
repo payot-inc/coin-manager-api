@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
     management: DataTypes.DECIMAL,
     repiar: DataTypes.DECIMAL,
     etc: DataTypes.DECIMAL,
-    targetDate: DataTypes.DATE,
+    targetDate: DataTypes.DATEONLY,
 
   }, { timestamps: false });
   maintenance.associate = function(models) {
