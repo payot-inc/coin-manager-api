@@ -2,7 +2,7 @@
 
 const fetch = require('node-fetch')
 const _ = require('lodash')
-const config = require('../config.json').sms
+const config = require('../config/config.json').sms
 const FormData = require('form-data')
 
 function sendSMS(targetArray, message) {

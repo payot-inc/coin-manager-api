@@ -4,7 +4,7 @@ client.on('connect', () => {
     console.log('연결됨')
 })
 
-function onConnected () {
+function onConnected() {
     return new Promise((resolve, reject) => {
         setTimeout(() => {
             reject('mqtt server timeout connectd')
@@ -18,7 +18,7 @@ function onConnected () {
 function request(topic, message) {
     return new Promise((resolve, reject) => {
         setTimeout(() => {
-            reject('message response timeout')
+            reject({ code: 400, name: 'message response timeout' })
         }, 1000 * 10);
 
         let responseTopic = topic.replace('server', 'machine')

@@ -9,7 +9,7 @@ router.get('/user/:id', [
     check('id', '아이디는 숫자이어야 합니다').isInt(),
     check('start').custom(val => moment(val).isValid()).optional(),
     check('end').custom(val => moment(val).isValid()).optional(),
-    check('resultCount').isInt().isLength({ min: 0, max: 200 }).optional()
+    check('resultCount').isInt({ min: 1, max: 200 }).optional()
 ],
 (req, res) => {
     const errors = validationResult(req);

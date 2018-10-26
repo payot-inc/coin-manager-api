@@ -29,6 +29,7 @@ module.exports = (sequelize, DataTypes) => {
     machine.belongsTo(models.company)
 
     machine.hasMany(models.service)
+    machine.hasMany(models.claim)
   };
   return machine;
 };
