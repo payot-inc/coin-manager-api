@@ -47,12 +47,12 @@ router.get('/machine/:id', [
 });
 
 // 서비스 등록
-router.post('/', [
+router.post('/machine/:id', [
     check('name', '서비스 이름을 입력해 주세요').isString().isLength({ min: 2, max: 20 }),
     check('notice', '서비스 설명').isString().optional(),
     check('price', '서비스 가격을 입력해 주세요').isNumeric().optional(),
     check('runTimeSec', '서비스 동작시간을 입력해 주세요').isInt().optional(),
-    check('machineId', '서비스가 동작할 장비를 입력해주세요').isInt()
+    check('id', '서비스가 동작할 장비를 입력해주세요').isInt()
 ], (req, res) => {
     const errors = validationResult(req);
 
@@ -60,6 +60,8 @@ router.post('/', [
 
     let data = req.body;
     delete data.id;
+    delete data.machineId;
+    data.machineId = req.params.id;
 
     service.create(data)
         .then(result => {

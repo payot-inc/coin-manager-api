@@ -60,6 +60,7 @@ module.exports = (sequelize, DataTypes) => {
     company.hasMany(models.machine)
     company.hasMany(models.user)
     company.hasMany(models.payments)
+    company.hasMany(models.sms)
   };
   return company;
 };

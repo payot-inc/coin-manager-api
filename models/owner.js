@@ -9,6 +9,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(1),
       defaultValue: '남'
     },
+    birthDate: DataTypes.DATEONLY,
     phone: DataTypes.STRING(50),
     premium: DataTypes.DECIMAL,
     deposit: DataTypes.DECIMAL,

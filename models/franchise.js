@@ -36,6 +36,7 @@ module.exports = (sequelize, DataTypes) => {
     // associations can be defined here
     franchise.hasMany(models.company)
     franchise.hasMany(models.owner)
+    franchise.hasMany(models.sms)
   };
   return franchise;
 };

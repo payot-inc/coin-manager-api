@@ -2,7 +2,7 @@ const router = require('express').Router();
 const _ = require('lodash');
 const moment = require('moment');
 const password = require('../modules/password');
-const { company, owner, machine, service, maintenance } = require('../models');
+const { company, owner, machine, service, maintenance, franchise } = require('../models');
 const { check, validationResult } = require('express-validator/check');
 
 // 업체 로그인
@@ -45,15 +45,22 @@ router.get('/:id', [
         where: {
             id: req.params.id
         },
-        attributes: { exclude: ['hash', 'salt', 'createdAt', 'updatedAt', 'deletedAt'] },
+        attributes: { exclude: ['hash', 'salt', 'franchiseId', 'createdAt', 'updatedAt', 'deletedAt'] },
         include: [
-            { model: owner },
+            { 
+                model: franchise,
+                attributes: { exclude: ['hash', 'salt', 'createdAt', 'updatedAt', 'deletedAt'] } 
+            },
+            { 
+                model: owner,
+                attributes: { exclude: ['companyId', 'franchiseId'] }
+            },
             { 
                 model: machine, 
-                attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
+                attributes: { exclude: ['companyId', 'createdAt', 'updatedAt', 'deletedAt'] },
                 include: [{
                     model: service,
-                    attributes: { exclude: [''] }
+                    attributes: { exclude: ['machineId', 'createdAt', 'updatedAt'] }
                 }]
             }
         ]
@@ -203,6 +210,7 @@ router.post('/:id/owner', [
     check('id').isInt(),
     check('name', '이름을 입력해 주세요').isString().isLength({ min: 2, max: 20 }),
     check('gender', '성별을 입력해 주세요').isIn(['남', '여']),
+    check('birthDate', '생년월일을 입력해 주세요').custom(val => moment(val).isValid()),
     check('phone', '휴대전화번호를 입력해 주세요').isMobilePhone(),
     check('premium', '권리금을 입력해 주세요').isNumeric(),
     check('deposit', '보증금을 입력해 주세요').isNumeric(),
