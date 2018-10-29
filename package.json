@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "nodemon ./bin/www",
-    "serve": "pm2 start ./bin/www -i 0 --name api"
+    "serve": "pm2 start ./bin/www -i 0 --name api && pm2 start ./device/server.js -i 1 --name mqtt"
   },
   "dependencies": {
     "cookie-parser": "~1.4.3",

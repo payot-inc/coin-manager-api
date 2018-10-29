@@ -35,6 +35,7 @@ module.exports = (sequelize, DataTypes) => {
   franchise.associate = function(models) {
     // associations can be defined here
     franchise.hasMany(models.company)
+    franchise.hasMany(models.maintenance)
     franchise.hasMany(models.owner)
     franchise.hasMany(models.sms)
   };

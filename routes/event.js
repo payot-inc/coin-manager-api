@@ -34,11 +34,11 @@ router.post('/company/:id/sms', [
 });
 
 // 사용자 포인트 추가
-router.post('/company/:id/point', [
+router.post('/users/point', [
     check('id').isInt(),
     check('users.*').isInt(),
     check('point').isInt().isLength({ min: 1 }),
-    check('sendSMS').isBoolean().optional()
+    check('isSMS').isBoolean().optional()
 ], (req, res) => {
     const errors = validationResult(req);
 
@@ -51,8 +51,11 @@ router.post('/company/:id/point', [
             id: req.body.users
         }
     }).then(([count]) => {
-        if (count == 0) res.status(204).json();
-        else res.json({ status: `${count}개의 메시지를 전송하였습니다`});
+        if (count == 0) {
+            res.status(204).json();
+        } else {
+            res.json({ status: `${count}개의 메시지를 전송하였습니다`});
+        };
     }).catch(err => {
         res.status(500).json({ error: err });
     });
@@ -86,7 +89,7 @@ router.post('/machine/:id/claim', [
         const topic = `server/${m.mac}/service/claim`;
         const message = ['000', req.body.amount].join(' ');
 
-        return mqtt(topic, message)
+        return mqtt.request(topic, message)
             .then(deviceResponse => {
                 // mqtt의 응답이 오류가 발생하였다면
                 if (deviceResponse.message[0] != '000') throw { code: 400, name: '장치로부터 응답이 없습니다' }

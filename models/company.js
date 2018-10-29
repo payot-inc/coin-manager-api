@@ -31,7 +31,7 @@ module.exports = (sequelize, DataTypes) => {
     },
 
     tel: DataTypes.STRING(50),
-
+    space: DataTypes.FLOAT,
     address: {
       type: DataTypes.STRING(200),
       allowNull: false

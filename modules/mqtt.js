@@ -40,4 +40,7 @@ function mqttApi(topic, message) {
         })
 }
 
-module.exports = request
+module.exports = {
+    client,
+    request
+}
