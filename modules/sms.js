@@ -13,7 +13,7 @@ function sendSMS(targetArray, message) {
     let option = _.clone(config)
 
     delete option.url
-    // delete option.testflag
+    delete option.testflag
 
     option.rphone = sendPerson
     option.msg = message
@@ -36,7 +36,7 @@ function sendSMS(targetArray, message) {
         if (messages[0] instanceof String) {
             return message[1]
         } else {
-            throw Number(messages[0])
+            throw messages[0]
         }
     })
 }

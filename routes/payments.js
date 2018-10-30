@@ -19,7 +19,7 @@ router.get('/company/:id', [
     payments.findAll({
         where: {
             companyId: req.params.id,
-            patAt: {
+            payAt: {
                 between: [startDate, endDate]
             }
         }

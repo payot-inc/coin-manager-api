@@ -23,6 +23,18 @@ router.get('/:id', [
   });
 });
 
+router.get('/company/:id', (req, res) => {
+  user.findAll({
+    where: {
+      companyId: req.params.id,
+    }
+  }).then(result => {
+    res.json(result);
+  }).catch(err => {
+    res.status(500).json({ error: err });
+  });
+});
+
 router.post('/', [
   check('phone').isMobilePhone(),
   check('companyId').isInt(),
