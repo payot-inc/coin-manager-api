@@ -1,10 +1,14 @@
 const mqtt = require('../modules/mqtt');
-const { machine, payments, deviceErrorLogs } = require('../models');
+const { company, machine, payments, deviceErrorLogs } = require('../models');
 const _ = require('lodash');
 
 const coinInsertRequest = `machine/+/service/cash`;
 
-mqtt.client.subscribe(coinInsertRequest, (topic, message) => {
+mqtt.client.subscribe(coinInsertRequest);
+
+mqtt.client.on('message', (topic, message) => {
+
+    console.log(topic, message.toString());
     const mac = topic.split('/')[1];
     const body = message.toString().split(' ');
 
@@ -19,15 +23,20 @@ mqtt.client.subscribe(coinInsertRequest, (topic, message) => {
             where: {
                 mac: mac
             },
-            attributes: ['id', 'mac', 'serviceAmmount', 'serviceRuntimeSec', 'companyId', 'franchiseId']
+            include: [{ model: company, attributes: ['franchiseId'] }],
+            attributes: ['id', 'mac', 'serviceAmmount', 'serviceRuntimeSec', 'companyId']
         }).then(data => {
+            // console.log(data)
+            
             if (_.isEmpty(data)) return;
+            
             return payments.create({
                 mac: mac,
                 companyId: data.companyId,
-                franchiseId: data.franchiseId,
-                amount: _.defaults(body[1])
-            });
+                franchiseId: data.company.franchiseId,
+                amount: _.defaults(body[1]),
+                payAt: new Date()
+            }).catch(console.log);
         });
     }
-})
+});

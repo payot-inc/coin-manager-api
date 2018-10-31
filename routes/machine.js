@@ -81,6 +81,15 @@ router.put('/:id', [
     });
 });
 
+router.post('/bulk', (req, res) => {
+    machine.bulkCreate(req.body)
+        .then(data => {
+            res.json(data)
+        }).catch(err => {
+            res.status(500).json({ error: err });
+        });
+});
+
 // 장치 삭제
 router.delete('/:id', (req, res) => {
     machine.destroy({

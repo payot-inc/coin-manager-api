@@ -210,7 +210,7 @@ router.post('/:id/owner', [
     check('id').isInt(),
     check('name', '이름을 입력해 주세요').isString().isLength({ min: 2, max: 20 }),
     check('gender', '성별을 입력해 주세요').isIn(['남', '여']),
-    check('birthDate', '생년월일을 입력해 주세요').custom(val => moment(val).isValid()),
+    // check('birthDate', '생년월일을 입력해 주세요').custom(val => moment(val).isValid()),
     check('phone', '휴대전화번호를 입력해 주세요').isMobilePhone(),
     check('premium', '권리금을 입력해 주세요').isNumeric(),
     check('deposit', '보증금을 입력해 주세요').isNumeric(),
