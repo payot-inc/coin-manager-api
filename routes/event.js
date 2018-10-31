@@ -21,12 +21,14 @@ router.post('/company/:id/sms', [
         },
         attributes: ['phone']
     }).then(numbers => {
-        return sendSMS.send(numbers.map(i => i.phone), req.body.message)
+        const phoneNumbers = numbers.map(u => u.phone);
+
+        return sendSMS.send(phoneNumbers, req.body.message)
     }).then(sendCount => {
         const data = {
             sendType: req.body.sendType ? req.body.sendType : '일반 전송',
             companyId: req.params.id,
-            from: req.body.from.join(', '),
+            from: '',
             count: sendCount
         }
 
@@ -34,6 +36,7 @@ router.post('/company/:id/sms', [
     }).then(result => {
         res.json(result)
     }).catch(err => {
+        console.log(err);
         res.status(500).json(err);
     });
 });
