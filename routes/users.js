@@ -43,9 +43,7 @@ router.post('/', [
 
   if (!errors.isEmpty()) return res.status(422).json({ error: errors.array() });
 
-  user.create({
-    phone: req.body.phone
-  }).then(data => {
+  user.create(req.body).then(data => {
     res.json(data);
   }).catch(err => {
     res.status(500).json({ error: err });

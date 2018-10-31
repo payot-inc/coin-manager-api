@@ -23,9 +23,11 @@
     "mysql2": "^1.6.1",
     "node-fetch": "^2.2.0",
     "pbkdf2-password": "^1.2.1",
+    "request": "^2.88.0",
     "sequelize": "^4.41.0"
   },
   "devDependencies": {
+    "axios": "^0.18.0",
     "faker": "^4.1.0"
   }
 }
