@@ -76,7 +76,7 @@ router.get('/:id', [
 router.post('/', [
     check('email', '이메일을 입력해 주세요').isEmail().normalizeEmail(),
     check('name', '이름 입력해 주세요').isString().isLength({ min: 2, max: 10 }),
-    check('number', '사업자 번호를 입력해 주세요').isString().isLength({ min: 12, max: 12 }),
+    // check('number', '사업자 번호를 입력해 주세요').isString().isLength({ min: 12, max: 12 }),
     check('password', '비밀번호를 입력해 주세요').isString().isLength({ min: 4, max: 20 }),
     check('address', '주소를 입력해 주세요').isString(),
     check('createdAt', '창업일을 입력해 주세요').custom(val => moment(val).isValid()),

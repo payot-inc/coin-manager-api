@@ -24,19 +24,21 @@ mqtt.client.on('message', (topic, message) => {
                 mac: mac
             },
             include: [{ model: company, attributes: ['franchiseId'] }],
-            attributes: ['id', 'mac', 'serviceAmmount', 'serviceRuntimeSec', 'companyId']
+            attributes: ['id', 'mac', 'serviceAmount', 'serviceRuntimeSec', 'companyId']
         }).then(data => {
             // console.log(data)
             
             if (_.isEmpty(data)) return;
             
-            return payments.create({
+            return {
                 mac: mac,
                 companyId: data.companyId,
                 franchiseId: data.company.franchiseId,
                 amount: _.defaults(body[1]),
                 payAt: new Date()
-            }).catch(console.log);
-        });
+            }
+        }).then(response => {
+            payments.create(response);
+        }).catch(console.log);
     }
 });
