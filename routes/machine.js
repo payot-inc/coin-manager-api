@@ -24,7 +24,7 @@ router.post('/', [
     check('name', '장치 이름을 입력해 주세요').isString().isLength({ min: 2, max: 20 }),
     check('price', '장치 가격을 입력해 주세요').isNumeric(),
     check('size', '장비의 규모를 입력해 주세요').isString().isLength({ min: 2, max: 10 }),
-    check('serviceAmmount', '장치가 동작하는 평균금액을 입력해 주세요').isNumeric(),
+    check('serviceAmount', '장치가 동작하는 평균금액을 입력해 주세요').isNumeric(),
     check('serviceRuntimeSec', '장치가 동작하는 평균 시간을 입력해 주세요').isInt(),
     check('installAt', '구입일자를 작성해 주세요').custom(val => moment(val).isValid()),
     check('companyId', '업체 아이디를 입력해 주세요').isInt()

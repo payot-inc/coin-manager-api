@@ -2,7 +2,7 @@ const router = require("express").Router();
 const _ = require("lodash");
 const moment = require("moment");
 const password = require("../modules/password");
-const { franchise, company, owner } = require("../models");
+const { sequelize, franchise, company, owner, user, machine } = require("../models");
 const { check, validationResult } = require("express-validator/check");
 
 // 프랜차이즈 로그인
@@ -79,7 +79,8 @@ router.get(
                 "deletedAt"
               ]
             },
-            include: { model: owner }
+            include: [owner, machine]
+
           }
         ],
         attributes: {
@@ -251,6 +252,22 @@ router.delete("/:id", [check("id").toInt()], (req, res) => {
     .catch(err => {
       res.status(500).json(err);
     });
+});
+
+router.get('/:id/company/users', (req, res) => {
+  company.findAll({
+    where: {
+      franchiseId: req.params.id
+    },
+    attributes: ['name', 'address', 'openDate', 'number'],
+    include: [
+      { model: user, attributes: ['phone', 'point'] }
+    ]
+  }).then(data => {
+    res.json(data);
+  }).catch(err => {
+    res.status(500).json({ error: err });
+  });
 });
 
 module.exports = router;

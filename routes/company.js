@@ -263,7 +263,9 @@ router.put('/:id/owner/:ownerId', [
     }).then(result => {
         if (result == 1) res.json({ status: 'success' });
         else res.status(204).json({ status: 'success' });
-    })
+    }).catch(err => {
+        res.status(500).json({ error: err });
+    });
 });
 
 // 업주 삭제

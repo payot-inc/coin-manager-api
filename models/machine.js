@@ -14,8 +14,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(10),
       allowNull: false
     },
+    size: DataTypes.STRING(10),
+    brand: DataTypes.STRING(20),
     price: DataTypes.DECIMAL,
-    serviceAmmount: {
+    serviceAmount: {
       type: DataTypes.DECIMAL,
       defaultValue: 0
     },
